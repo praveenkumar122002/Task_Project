@@ -1,0 +1,11 @@
+Django>=4.2
+django-filter
+djangorestframework
+djangorestframework-simplejwt
+psycopg2-binary
+celery>=5.2
+redis
+django-environ
+django-celery-beat
+gunicorn
+whitenoise
