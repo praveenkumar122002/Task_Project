@@ -28,7 +28,7 @@ def send_assignment_email_task(task_id, reason="assigned"):
         subject = f"Task status updated: {t.title}"
         message = f"The status of task '{t.title}' changed to {t.status}.\n\nProject: {t.project.name}"
     
-    recipient_email = "luckypraveen425@gmail.com"
+    recipient_email = "sample@gmail.com"
     send_mail(
         subject,
         message,

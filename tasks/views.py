@@ -2,22 +2,32 @@
 from rest_framework import viewsets, permissions, status, filters
 from rest_framework.response import Response
 from .models import Project, Task
+from django.db.models import Q
 from .serializers import ProjectSerializer, TaskSerializer
 from rest_framework.decorators import action
 from django_filters.rest_framework import DjangoFilterBackend
 from .tasks import send_assignment_email_task
+from rest_framework import generics
+from .serializers import UserCreateSerializer
 from rest_framework.permissions import IsAuthenticated
 
 class IsOwner(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
         return obj.owner == request.user
-
+    
+class UserCreateAPIView(generics.CreateAPIView):
+    serializer_class = UserCreateSerializer
+    permission_classes = [] 
+    
 class ProjectViewSet(viewsets.ModelViewSet):
     serializer_class = ProjectSerializer
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        return Project.objects.filter(owner=self.request.user).order_by("-created_at")
+        user = self.request.user
+        return Project.objects.filter(
+            Q(owner=user) | Q(tasks__assigned_to=user)
+        ).distinct().order_by("-created_at")
 
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
